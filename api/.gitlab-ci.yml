@@ -1,0 +1,20 @@
+image: python:3.7
+
+before_script:
+   - pip install -r docker/test.txt
+
+# Run tests, coverage and linter on project
+variables:
+  MAX_FLAKE8_ERRORS_ALLOWED: "10"
+  MIN_COVERAGE_ALLOWED: "95"
+
+test:
+  tags:
+    - CI-Tag
+  script:
+    - chmod +x ./py-linter.sh
+    - ./py-linter.sh
+    - coverage run -m pytest 
+    - coverage report --fail-under=95 --omit=*tests*,*app.py
+    - coverage-badge
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
