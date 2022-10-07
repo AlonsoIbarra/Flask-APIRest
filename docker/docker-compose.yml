@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  ercom-database:
+    image: mysql:8.0
+    container_name: ercom-database
+    hostname: ercom-database
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "127.0.0.1:33061:3306"
+    networks:
+      docker_container_network:
+        ipv4_address: 172.27.1.10
+
+  ercome-api:
+    depends_on:
+        - ercom-database
+    build:
+      dockerfile: DockerFile
+      context: .
+    restart: always
+    environment:
+      DEBUG: ${DEBUG}
+      HOST: ${HOST}
+      PORT: ${PORT}
+      ENVIRONMENT: ${ENVIRONMENT}
+      SECRET: ${SECRET}
+      EXPIRATION_DAYS: ${EXPIRATION_DAYS}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_PORT: ${DATABASE_PORT}
+      SHARED_PRIVATE_KEY: ${SHARED_PRIVATE_KEY}
+    command:  waitress-serve --port=8000 --call app:start_app
+    working_dir: /home/app
+    ports:
+      - "0.0.0.0:8000:8000"
+    container_name: eircome-api
+    hostname: eircome-api
+    volumes:
+      - ../api:/home
+    networks:
+      docker_container_network:
+        ipv4_address: 172.27.1.11
+
+networks:
+  docker_container_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.27.1.0/24
