@@ -111,4 +111,3 @@ class ProductsListViewTest(BaseTest):
         data = json.loads(response.data.decode())
         self.assertEqual(len(data['data']), 1)
         self.assertIn('Product 1', str(data['data']))
-

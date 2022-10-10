@@ -1,3 +1,4 @@
+from sqlite3 import Date
 from sqlalchemy.exc import IntegrityError
 from utils.jwt_utils import verify_token_middleware
 from utils.login_utils import create_signature
@@ -18,9 +19,11 @@ from view_resources.validations.product_args import product_get_args, \
 from functools import wraps
 from werkzeug.exceptions import BadRequest
 
+from flask_restful_swagger import swagger
 
 app = Flask(__name__)
 api = Api(app)
+api = swagger.docs(Api(app), apiVersion='0.1')
 
 
 # DB connection
@@ -42,6 +45,7 @@ marshmallow = Marshmallow(app)
 database = SQLAlchemy(app)
 
 
+@swagger.model
 class Client(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(100), unique=True, nullable=False)
@@ -99,6 +103,7 @@ subcategories = database.Table(
 )
 
 
+@swagger.model
 class Category(database.Model):
     __tablename__ = "category"
     id = database.Column(database.Integer, primary_key=True)
@@ -119,6 +124,7 @@ class Category(database.Model):
         return self
 
 
+@swagger.model
 class Product(database.Model):
     __tablename__ = "product"
     id = database.Column(database.Integer, primary_key=True)
@@ -220,6 +226,48 @@ def login_required(f):
 
 class AuthResource(Resource):
 
+    @swagger.operation(
+        notes='Endpoint for login',
+        nickname='Login',
+        parameters=[
+            {
+                "name": "name",
+                "description": "Client name field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": 'String',
+                "paramType": "body"
+            },
+            {
+                "name": "password",
+                "description": "Client password field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": 'String',
+                "paramType": "body"
+            }
+        ],
+        responseMessages=[
+            {
+                "code": 200,
+                "data": str(
+                    {
+                        "success": True,
+                        "data": 'token',
+                    }
+                )
+            },
+            {
+                "code": 400,
+                "data": str(
+                    {
+                        "success": False,
+                        "error": "Error string",
+                    }
+                )
+            }
+        ]
+    )
     def post(self):
         if len(request.data) == 0:
             response = jsonify({
@@ -270,6 +318,106 @@ class AuthResource(Resource):
 class ClientResource(Resource):
 
     @login_required
+    @swagger.operation(
+        notes='Endpoint for Client registrer',
+        nickname='Client creation',
+        parameters=[
+            {
+                "name": "name",
+                "description": "Client name field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "first_surname",
+                "description": "Client surname field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "second_surname",
+                "description": "Client second surname field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "birthdate",
+                "description": "Client birthdate field in YYYY-MM-DD format.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": Date.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "gender",
+                "description": "Client gender ('M'|'F').",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "email",
+                "description": "Client email field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "phone",
+                "description": "Client phone field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "postal_code",
+                "description": "Client postal code field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            },
+            {
+                "name": "password",
+                "description": "Client password field.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": str.__name__,
+                "paramType": "body"
+            }
+        ],
+        responseMessages=[
+            {
+                "code": 200,
+                "data": str(
+                    {
+                        "success": True,
+                        "data": {
+                            "erp-client-key": 'Integer client id'
+                        },
+                    }
+                )
+            },
+            {
+                "code": 400,
+                "data": str(
+                    {
+                        "success": False,
+                        "error": "Error string",
+                    }
+                )
+            }
+        ]
+    )
     def post(self):
         if len(request.data) == 0:
             response = jsonify({
@@ -325,6 +473,64 @@ class ClientResource(Resource):
 class FilterProductsResource(Resource):
 
     @login_required
+    @swagger.operation(
+        notes="Endpoint for filter Products by category and subscategorie id",
+        nickname='Products filter',
+        parameters=[
+            {
+                "name": "site_client_id",
+                "description": "Client id who requests.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": int.__name__,
+                "paramType": "query"
+            },
+            {
+                "name": "category_id",
+                "description": "Product's category id.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": int.__name__,
+                "paramType": "query"
+            },
+            {
+                "name": "subcategory1_id",
+                "description": "Product's subcategory 1 id.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": int.__name__,
+                "paramType": "query"
+            },
+            {
+                "name": "subcategory2_id",
+                "description": "Product's subcategory 1 id.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": int.__name__,
+                "paramType": "query"
+            }
+        ],
+        responseMessages=[
+            {
+                "code": 200,
+                "data": str(
+                    {
+                        "success": True,
+                        "data": "List of product matches",
+                    }
+                )
+            },
+            {
+                "code": 400,
+                "data": str(
+                    {
+                        "success": False,
+                        "error": "Error string",
+                    }
+                )
+            }
+        ]
+    )
     def get(self):
         try:
             args = product_get_args.parse_args()
@@ -359,6 +565,48 @@ class FilterProductsResource(Resource):
 class ListProductsResource(Resource):
 
     @login_required
+    @swagger.operation(
+        notes="Endpoint for Products retrieve by product id's",
+        nickname='Products retrieve',
+        parameters=[
+            {
+                "name": "site_client_id",
+                "description": "Client id who requests.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": int.__name__,
+                "paramType": "query"
+            },
+            {
+                "name": "product_ids",
+                "description": "List of product's id separeted by commas.",
+                "required": True,
+                "allowMultiple": False,
+                "dataType": int.__name__,
+                "paramType": "query"
+            }
+        ],
+        responseMessages=[
+            {
+                "code": 200,
+                "data": str(
+                    {
+                        "success": True,
+                        "data": "List of product matches",
+                    }
+                )
+            },
+            {
+                "code": 400,
+                "data": str(
+                    {
+                        "success": False,
+                        "error": "Error string",
+                    }
+                )
+            }
+        ]
+    )
     def get(self):
         try:
             args = list_product_get_args.parse_args()
