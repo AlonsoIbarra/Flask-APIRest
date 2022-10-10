@@ -25,9 +25,8 @@ app = Flask(__name__)
 api = Api(app)
 api = swagger.docs(Api(app), apiVersion='0.1')
 
-
 # DB connection
-if getenv('sqlalchemy_database_uri') is not None:
+if getenv('sqlalchemy_database_uri'):
     sqlalchemy_database_uri = getenv('sqlalchemy_database_uri')
 else:
     sqlalchemy_database_uri = 'mysql+pymysql://{}:{}@{}/{}'.format(
