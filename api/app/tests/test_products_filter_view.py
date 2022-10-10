@@ -73,64 +73,38 @@ class ProductsFilterViewTest(BaseTest):
 
     def test_missing_params(self):
         tester = self.app.test_client(self)
-        response = tester.get(
-            self.url,
-            headers=self.headers
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertIn('Missing json params', str(response.data))
 
+        url = self.url + '?category_id=2'
         response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'category_id': '2'
-                }
-            )
+            url,
+            headers=self.headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn('site_client_id', str(response.data))
 
+        url = self.url + '?site_client_id=&category_id=2'
         response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'site_client_id': '',
-                    'category_id': '2'
-                }
-            )
+            url,
+            headers=self.headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn('subcategory1_id', str(response.data))
 
+        url = self.url + '?site_client_id=&category_id=2&subcategory1_id=2'
         response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'site_client_id': '',
-                    'category_id': '2',
-                    'subcategory1_id': '2'
-                }
-            )
+            url,
+            headers=self.headers
         )
         self.assertEqual(response.status_code, 400)
 
     def test_empty_data_request(self):
         tester = self.app.test_client(self)
+
+        url = self.url + '?site_client_id=&category_id=-1&subcategory1_id=-1'\
+            '&subcategory2_id=-1'
         response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'site_client_id': '',
-                    'category_id': '-1',
-                    'subcategory1_id': '-1',
-                    'subcategory2_id': '-1'
-                }
-            )
+            url,
+            headers=self.headers
         )
 
         self.assertEqual(response.status_code, 200)
@@ -139,17 +113,17 @@ class ProductsFilterViewTest(BaseTest):
 
     def test_not_empty_data_request(self):
         tester = self.app.test_client(self)
-        response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'site_client_id': '',
-                    'category_id': self.category1.id,
-                    'subcategory1_id': self.category2.id,
-                    'subcategory2_id': self.category3.id
-                }
+
+        url = self.url + '?site_client_id=&category_id={}&'\
+            'subcategory1_id={}&subcategory2_id={}'\
+            .format(
+                self.category1.id,
+                self.category2.id,
+                self.category3.id
             )
+        response = tester.get(
+            url,
+            headers=self.headers
         )
 
         self.assertEqual(response.status_code, 200)

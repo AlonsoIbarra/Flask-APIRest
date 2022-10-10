@@ -61,21 +61,11 @@ class ProductsListViewTest(BaseTest):
 
     def test_missing_params(self):
         tester = self.app.test_client(self)
-        response = tester.get(
-            self.url,
-            headers=self.headers
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertIn('Missing json params', str(response.data))
 
+        url = self.url + '?site_client_id=2'
         response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'site_client_id': '2'
-                }
-            )
+            url,
+            headers=self.headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn(
@@ -83,14 +73,10 @@ class ProductsListViewTest(BaseTest):
             str(response.data)
         )
 
+        url = self.url + '?product_ids=2'
         response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'product_ids': '2'
-                }
-            )
+            url,
+            headers=self.headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn(
@@ -101,18 +87,28 @@ class ProductsListViewTest(BaseTest):
     def test_empty_response_data(self):
         tester = self.app.test_client(self)
 
+        url = self.url + '?product_ids=0&site_client_id=2'
         response = tester.get(
-            self.url,
-            headers=self.headers,
-            data=json.dumps(
-                {
-                    'site_client_id': '2',
-                    'product_ids': str(self.product.id)
-                }
-            )
+            url,
+            headers=self.headers
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode())
+        self.assertEqual(len(data['data']), 0)
+
+    def test_not_empty_response_data(self):
+        tester = self.app.test_client(self)
+
+        url = self.url + '?product_ids={}&site_client_id=2'\
+            .format(str(self.product.id))
+        response = tester.get(
+            url,
+            headers=self.headers
         )
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data.decode())
         self.assertEqual(len(data['data']), 1)
         self.assertIn('Product 1', str(data['data']))
+
