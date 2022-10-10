@@ -22,3 +22,4 @@ flask-swagger-ui==4.11.1
 flasgger==0.9.5
 flask-apispec==0.11.4
 webargs==8.2.0
+flask-restful-swagger==0.20.1
