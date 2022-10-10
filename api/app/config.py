@@ -36,7 +36,6 @@ else:
 app.config['SQLALCHEMY_DATABASE_URI'] = sqlalchemy_database_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
 marshmallow = Marshmallow(app)
 
 
@@ -222,15 +221,15 @@ def login_required(f):
 class AuthResource(Resource):
 
     def post(self):
-        try:
-            data = request.get_json()
-        except Exception:
+        if len(request.data) == 0:
             response = jsonify({
                 "success": False,
-                "error": "Name and password are required"
+                "error": "Name and password are required",
+                "data": None
             })
             response.status_code = 400
             return response
+        data = request.get_json()
 
         try:
             args = login_post_args.parse_args()
@@ -272,9 +271,7 @@ class ClientResource(Resource):
 
     @login_required
     def post(self):
-        try:
-            request.get_json()
-        except Exception:
+        if len(request.data) == 0:
             response = jsonify({
                 "success": False,
                 "error": "Missing json params"
@@ -330,16 +327,6 @@ class FilterProductsResource(Resource):
     @login_required
     def get(self):
         try:
-            request.get_json()
-        except Exception:
-            response = jsonify({
-                "success": False,
-                "error": "Missing json params"
-            })
-            response.status_code = 400
-            return response
-
-        try:
             args = product_get_args.parse_args()
         except BadRequest as error:
             args = False
@@ -373,16 +360,6 @@ class ListProductsResource(Resource):
 
     @login_required
     def get(self):
-        try:
-            request.get_json()
-        except Exception:
-            response = jsonify({
-                "success": False,
-                "error": "Missing json params"
-            })
-            response.status_code = 400
-            return response
-
         try:
             args = list_product_get_args.parse_args()
         except BadRequest as error:
