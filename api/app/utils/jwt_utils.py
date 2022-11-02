@@ -5,6 +5,9 @@ from flask import request, jsonify
 
 
 def expiration_date():
+    """
+    Return a date in the future as expiraton days says.
+    """
     today = datetime.today()
     expiration_date = today + timedelta(
         days=int(getenv("EXPIRATION_DAYS"))
@@ -13,6 +16,11 @@ def expiration_date():
 
 
 def write_token(data: dict):
+    """
+    Write a token in jwt database library to check api access.
+    Params:
+        data dict Any Python dictionary to encript.
+    """
     token = encode(
         payload={
             **data,
@@ -25,6 +33,12 @@ def write_token(data: dict):
 
 
 def validate_token(token, output=False):
+    """
+    Validates a given token in jwt database library.
+    Params:
+        token  string  A valid string token.
+        output bool    If the validation result should be return.
+    """
     try:
         if output:
             return decode(
@@ -54,6 +68,9 @@ def validate_token(token, output=False):
 
 
 def verify_token_middleware():
+    """
+    Function to validate a Barier token from request header.
+    """
     if 'Authorization' not in request.headers:
         response = jsonify({
             "success": False,

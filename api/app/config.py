@@ -46,6 +46,9 @@ database = SQLAlchemy(app)
 
 @swagger.model
 class Client(database.Model):
+    """
+    This class represents a site client who can login in API.
+    """
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(100), unique=True, nullable=False)
     first_surname = database.Column(database.String(50), nullable=False)
@@ -104,6 +107,9 @@ subcategories = database.Table(
 
 @swagger.model
 class Category(database.Model):
+    """
+    This class helps to group related products.
+    """
     __tablename__ = "category"
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(40), unique=True, nullable=False)
@@ -125,6 +131,9 @@ class Category(database.Model):
 
 @swagger.model
 class Product(database.Model):
+    """
+    Products wich belongs to just some Clients.
+    """
     __tablename__ = "product"
     id = database.Column(database.Integer, primary_key=True)
     category_id = database.Column(
@@ -182,38 +191,41 @@ class Product(database.Model):
 
 
 class ClientSchema(marshmallow.Schema):
+    """
+    Helps to represent Clients as json data.
+    """
     class Meta:
         model = Client
         load_instance = True
 
 
 class CategorySchema(marshmallow.SQLAlchemyAutoSchema):
+    """
+    Helps to represent Categories as json data.
+    """
     class Meta:
         model = Category
         load_instance = True
 
 
 class ProductSchema(marshmallow.SQLAlchemyAutoSchema):
+    """
+    Helps to represent Products as json data.
+    """
     class Meta:
         model = Product
         include_relationships = True
         load_instance = True
 
 
-class LoginSchema(marshmallow.Schema):
-    class Meta:
-        fields = (
-            'name',
-            'password'
-        )
-
-
 database.create_all()
 database.session.commit()
 
 
-# decorator for verifying the JWT
 def login_required(f):
+    """
+    Function decorator to validate the Bearer token in header requests.
+    """
     @wraps(f)
     def decorated(*args, **kwargs):
         response = verify_token_middleware()
@@ -224,6 +236,9 @@ def login_required(f):
 
 
 class AuthResource(Resource):
+    """
+    Classview for login endpoints.
+    """
 
     @swagger.operation(
         notes='Endpoint for login',
@@ -315,6 +330,9 @@ class AuthResource(Resource):
 
 
 class ClientResource(Resource):
+    """
+    Classview for Client object endpoints.
+    """
 
     @login_required
     @swagger.operation(
@@ -470,6 +488,9 @@ class ClientResource(Resource):
 
 
 class FilterProductsResource(Resource):
+    """
+    Classview for filter object products endpoints.
+    """
 
     @login_required
     @swagger.operation(
@@ -562,6 +583,9 @@ class FilterProductsResource(Resource):
 
 
 class ListProductsResource(Resource):
+    """
+    Classview to list object products endpoints from a id product list.
+    """
 
     @login_required
     @swagger.operation(
