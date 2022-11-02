@@ -7,7 +7,6 @@ from config import app
 def start_app():
     load_dotenv()
     if getenv('ENVIRONMENT') == 'production':
-        print('ENVIRONMENT', getenv('ENVIRONMENT'))
         serve(
             app,
             port=getenv('PORT'),

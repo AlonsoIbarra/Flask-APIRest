@@ -8,6 +8,11 @@ variables:
   MAX_FLAKE8_ERRORS_ALLOWED: "10"
   MIN_COVERAGE_ALLOWED: "95"
   EXPIRATION_DAYS: 1
+  SECRET: "SECRET"
+  DEBUG: 0
+  PORT: 8000
+  HOST: "localhost"
+  sqlalchemy_database_uri: "sqlite:////databasefile.db"
 
 test:
   tags:
