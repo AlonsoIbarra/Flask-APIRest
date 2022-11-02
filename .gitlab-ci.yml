@@ -12,6 +12,7 @@ variables:
   DEBUG: 0
   PORT: 8000
   HOST: "localhost"
+  SHARED_PRIVATE_KEY: "$8Ser%-6ds^dg3y&wa*.@laj1"
   sqlalchemy_database_uri: "sqlite:////databasefile.db"
 
 test:
