@@ -14,15 +14,9 @@ product_get_args.add_argument(
     location='args'
 )
 product_get_args.add_argument(
-    'subcategory1_id',
+    'subcategory_ids',
     required=True,
-    help='Subcategory 1 field is missing',
-    location='args'
-)
-product_get_args.add_argument(
-    'subcategory2_id',
-    required=True,
-    help='Subcategory 2 field is missing',
+    help='Subcategory list field is missing',
     location='args'
 )
 

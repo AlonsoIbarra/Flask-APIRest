@@ -514,16 +514,8 @@ class FilterProductsResource(Resource):
                 "paramType": "query"
             },
             {
-                "name": "subcategory1_id",
-                "description": "Product's subcategory 1 id.",
-                "required": True,
-                "allowMultiple": False,
-                "dataType": int.__name__,
-                "paramType": "query"
-            },
-            {
-                "name": "subcategory2_id",
-                "description": "Product's subcategory 1 id.",
+                "name": "subcategory_ids",
+                "description": "List of product subcategories ids separated by commas.",
                 "required": True,
                 "allowMultiple": False,
                 "dataType": int.__name__,
@@ -568,10 +560,7 @@ class FilterProductsResource(Resource):
             products = Product.query.filter(
                 Product.category.has(id=args['category_id']),
                 Product.subcategories.any(
-                    Category.id.in_([args['subcategory1_id']])
-                ),
-                Product.subcategories.any(
-                    Category.id.in_([args['subcategory2_id']])
+                    Category.id.in_([args['subcategory_ids']])
                 )
             ).all()
             response = jsonify({
