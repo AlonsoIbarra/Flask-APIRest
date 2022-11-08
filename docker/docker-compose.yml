@@ -16,7 +16,7 @@ services:
       docker_container_network:
         ipv4_address: 172.27.1.10
 
-  ercome-api:
+  ercom-api:
     depends_on:
         - ercom-database
     build:
@@ -40,8 +40,8 @@ services:
     working_dir: /home/app
     ports:
       - "0.0.0.0:8000:8000"
-    container_name: eircome-api
-    hostname: eircome-api
+    container_name: ercom-api
+    hostname: ercom-api
     volumes:
       - ../api:/home
     networks:
