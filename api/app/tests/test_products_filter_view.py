@@ -88,9 +88,9 @@ class ProductsFilterViewTest(BaseTest):
             headers=self.headers
         )
         self.assertEqual(response.status_code, 400)
-        self.assertIn('subcategory1_id', str(response.data))
+        self.assertIn('subcategory_ids', str(response.data))
 
-        url = self.url + '?site_client_id=&category_id=2&subcategory1_id=2'
+        url = self.url + '?site_client_id=2&subcategory_ids=2'
         response = tester.get(
             url,
             headers=self.headers
@@ -100,8 +100,7 @@ class ProductsFilterViewTest(BaseTest):
     def test_empty_data_request(self):
         tester = self.app.test_client(self)
 
-        url = self.url + '?site_client_id=&category_id=-1&subcategory1_id=-1'\
-            '&subcategory2_id=-1'
+        url = self.url + '?site_client_id=&category_id=-1&subcategory_ids=-1'
         response = tester.get(
             url,
             headers=self.headers
@@ -115,11 +114,10 @@ class ProductsFilterViewTest(BaseTest):
         tester = self.app.test_client(self)
 
         url = self.url + '?site_client_id=&category_id={}&'\
-            'subcategory1_id={}&subcategory2_id={}'\
+            'subcategory_ids={}'\
             .format(
                 self.category1.id,
-                self.category2.id,
-                self.category3.id
+                self.category2.id
             )
         response = tester.get(
             url,
